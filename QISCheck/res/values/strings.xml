@@ -1,0 +1,19 @@
+<resources>
+
+    <string name="app_name">QIS-Check HSRM</string>
+    <string name="menu_settings">Einstellungen</string>
+    <string name="title_activity_main">QIS-Check</string>
+    <string name="username">Benutzername</string>
+    <string name="password">Passwort</string>
+    <string name="login">Anmelden</string>
+    <string name="logo">QIS-Check Logo</string>
+    <string name="title_activity_grades_view">QIS-Check - Notenspiegel</string>
+    <string name="menu_refresh">Aktualisieren</string>
+    <string name="menu_logout">Abmelden</string>
+
+    <!-- Fehlermeldungen -->
+    <string name="error">Fehler</string>
+    <string name="msg_nogrades">Noten konnten nicht abgerufen werden</string>
+    <string name="title_activity_settings">QIS-Check - Einstellungen</string>
+
+</resources>

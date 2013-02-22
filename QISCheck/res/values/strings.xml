@@ -7,7 +7,7 @@
     <string name="password">Passwort</string>
     <string name="login">Anmelden</string>
     <string name="logo">QIS-Check Logo</string>
-    <string name="title_activity_grades_view">QIS-Check - Notenspiegel</string>
+    <string name="title_activity_grades_view">Notenspiegel</string>
     <string name="menu_refresh">Aktualisieren</string>
     <string name="menu_logout">Abmelden</string>
 

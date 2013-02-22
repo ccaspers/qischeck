@@ -18,7 +18,7 @@ public interface WebParser {
 	 * Parsed den HTML-Notenspiegel in eine Liste aus Key-Valuepaaren für Fächer
 	 * 
 	 * @param html Notenspiegel
-	 * @return Liste aus Fächern
+	 * @return Liste aus F�chern
 	 */
 	public List<ContentValues> readCategories(String pageCache);
 

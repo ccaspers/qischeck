@@ -86,8 +86,8 @@ public class QIS {
 	 * @throws IOException
 	 */
 	public List<ContentValues> getGrades() throws ClientProtocolException, IOException{
-		cacheGrades();
-		List<ContentValues> grades = parser.readGrades(pageCache);
+		String page = getPage();
+		List<ContentValues> grades = parser.readGrades(page);
 		return grades;
 	}
 	
@@ -100,15 +100,16 @@ public class QIS {
 	 * @throws IOException
 	 */
 	public List<ContentValues> getCategories() throws ClientProtocolException, IOException{
-		cacheGrades();
-		return parser.readCategories(pageCache);
+		String page = getPage();
+		return parser.readCategories(page);
 	}
 
-	private void cacheGrades() throws ClientProtocolException, IOException {
+	private String getPage() throws ClientProtocolException, IOException {
 		if(pageCache == null){
-			String url = GRADES_URL.replace("${ASI}", this.asi);
-			pageCache = getPageContents(pageRequest(url, null, true));
+			String gradesUrl = GRADES_URL.replace("${ASI}", this.asi);
+			pageCache = getPageContents(pageRequest(gradesUrl, null, true));
 		}
+		return pageCache;
 	}
 
 	/**

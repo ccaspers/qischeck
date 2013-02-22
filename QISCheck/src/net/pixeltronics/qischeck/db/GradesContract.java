@@ -25,12 +25,7 @@ public class GradesContract {
 				Table.Grade.CP, 
 				Table.Grade.COMMENT
 		};
-		public static final String[] PROJECTION_SMALL = new String[] {
-			Table.Grade.ID, 
-			Table.Grade.TITLE, 
-			Table.Grade.SEMESTER,
-			Table.Grade.RESULT, 
-		};
+
 		public static final String SELECTION_BY_CATEGORY = " id/10 = ?/10"; 
 	}
 	

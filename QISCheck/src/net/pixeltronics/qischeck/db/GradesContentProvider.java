@@ -2,7 +2,6 @@ package net.pixeltronics.qischeck.db;
 
 import net.pixeltronics.qischeck.db.GradesContract.Category;
 import net.pixeltronics.qischeck.db.GradesContract.Grade;
-
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
@@ -10,21 +9,24 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.util.Log;
 
 /**
  * @author Christian
  *
  */
 public class GradesContentProvider extends ContentProvider {
-
+	
+	private static final String TAG ="GradesProvider";
 
 	private static final String MULTITYPE = "vnd.android.cursor.dir";
 	private static final String ITEMTYPE  = "vnd.android.cursor.item";
 	
-	public static final int GRADE 				= 0;
-	public static final int CATEGORIES 			= 1;
-	public static final int CATEGORY_BY_ID 		= 2;
-	public static final int GRADES_BY_CATEGORY	= 3;
+	public static final int GRADES 				= 0;
+	public static final int GRADE_BY_ID			= 1;
+	public static final int CATEGORIES 			= 2;
+	public static final int CATEGORY_BY_ID 		= 3;
+	public static final int GRADES_BY_CATEGORY	= 4;
 	
 	private static final String GRADE_DIR_TYPE = MULTITYPE + "/" + "grade";
 	private static final String GRADE_ITEM_TYPE = ITEMTYPE + "/" + "grade";  
@@ -47,7 +49,8 @@ public class GradesContentProvider extends ContentProvider {
 
 	static { 
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		uriMatcher .addURI(GradesContract.AUTH, GradesContract.GRADES + "/#", GRADE);
+		uriMatcher .addURI(GradesContract.AUTH, GradesContract.GRADES, GRADES);
+		uriMatcher .addURI(GradesContract.AUTH, GradesContract.GRADES + "/#", GRADE_BY_ID);
 		uriMatcher .addURI(GradesContract.AUTH, GradesContract.CATEGORIES, CATEGORIES);
 		uriMatcher .addURI(GradesContract.AUTH, GradesContract.CATEGORIES + "/#", CATEGORY_BY_ID);
 		uriMatcher .addURI(GradesContract.AUTH, GradesContract.CATEGORIES + "/#/" + GradesContract.GRADES, GRADES_BY_CATEGORY);
@@ -68,7 +71,10 @@ public class GradesContentProvider extends ContentProvider {
 	@Override
 	public String getType(Uri uri) {
 		switch(uriMatcher.match(uri)){
-		case GRADE: 
+		case GRADES: 
+			return GRADE_DIR_TYPE;
+		
+		case GRADE_BY_ID:
 			return GRADE_ITEM_TYPE;
 			
 		case GRADES_BY_CATEGORY:
@@ -91,20 +97,29 @@ public class GradesContentProvider extends ContentProvider {
 	public Uri insert(Uri uri, ContentValues values) {
 		long id;
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+		String table ;
+		Uri changedUri;
 		
 		switch(uriMatcher.match(uri)){
-		case GRADE: 
-			id = db.insert(DBContract.Table.GRADE, null, values);
-			if(id != -1){
-				return Uri.withAppendedPath(Grade.BASE_URI, String.valueOf(id));
-			}
+		case GRADES: 
+			table 	= DBContract.Table.GRADE;
+			changedUri 	= Grade.BASE_URI ;
+			break;
 		case CATEGORIES:
-			id = db.insert(DBContract.Table.CATEGORY, null, values);
-			if(id != -1){
-				return Uri.withAppendedPath(Category.BASE_URI, String.valueOf(id));
-			}
+			table 	= DBContract.Table.CATEGORY;
+			changedUri 	= Category.BASE_URI;
+			break;
+		default: return null;
 		}
-		return null;
+		
+		id = db.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+		
+		if(id != -1){
+			getContext().getContentResolver().notifyChange(changedUri, null);
+			return Uri.withAppendedPath(changedUri, String.valueOf(id));
+		}else{
+			return null;
+		}
 	}
 
 	/* (non-Javadoc)
@@ -117,7 +132,7 @@ public class GradesContentProvider extends ContentProvider {
 		String table = null;
 		
 		switch (uriMatcher.match(uri)) {
-		case GRADE:
+		case GRADES:
 			table = DBContract.Table.GRADE;
 			break;
 		case GRADES_BY_CATEGORY:

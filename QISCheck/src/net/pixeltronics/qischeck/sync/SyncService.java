@@ -20,8 +20,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.OperationApplicationException;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.RemoteException;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.Gravity;
@@ -30,20 +32,25 @@ import android.widget.Toast;
 public class SyncService extends IntentService {
 
 	public static final String TAG = SyncService.class.getName();
+	private NotificationManager mNotificationManager;
 	public SyncService() {
 		super(TAG);
 	}
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		showNotification();
+		int notifyID = 1;
+		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		showNotification(notifyID);
 		downloadGrades();
-//		cancelNotification();
+		cancelNotification(notifyID);
 	}
 
-	private void showNotification() {
-		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		int notifyID = 1;
+	private void cancelNotification(int notifyID) {
+		mNotificationManager.cancel(notifyID);
+	}
+
+	private void showNotification(int notifyID) {
 		NotificationCompat.Builder mNotifyBuilder = new NotificationCompat.Builder(this)
 		    .setContentTitle("New Message")
 		    .setContentText("You've received new messages.")
@@ -54,8 +61,12 @@ public class SyncService extends IntentService {
 	}
 
 	private void downloadGrades() {
+	    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);        
+	    String uname = prefs.getString("username",null);
+	    String pword = prefs.getString("password",null);
+	    
 		WebParser parser = new MIParser();
-		QIS qis = new QIS("", "", parser);
+		QIS qis = new QIS(uname, pword, parser);
 		try{
 	        qis.login();
 	        List<ContentValues> categories = qis.getCategories();
@@ -81,19 +92,31 @@ public class SyncService extends IntentService {
 	}
 
 	
+// BATCH MODE
+//	private void insertValues(Uri uri, List<ContentValues> values){
+//		ContentResolver cr = getContentResolver();
+//		ArrayList<ContentProviderOperation> ops =  new ArrayList<ContentProviderOperation>();
+//		for(ContentValues row : values){
+//			ops.add(ContentProviderOperation.newInsert(uri).withValues(row).build());
+//		}
+//		try {
+//			cr.applyBatch(GradesContract.AUTH, ops);
+//		} catch (RemoteException e) {
+//			Log.e(TAG,"Error while inserting values", e);
+//		} catch (OperationApplicationException e) {
+//			Log.e(TAG,"Error while inserting values", e);
+//		}
+//	}
 	
 	private void insertValues(Uri uri, List<ContentValues> values){
 		ContentResolver cr = getContentResolver();
-		ArrayList<ContentProviderOperation> ops =  new ArrayList<ContentProviderOperation>();
 		for(ContentValues row : values){
-			ops.add(ContentProviderOperation.newInsert(uri).withValues(row).build());
-		}
-		try {
-			cr.applyBatch(GradesContract.AUTH, ops);
-		} catch (RemoteException e) {
-			Log.e(TAG,"Error while inserting values", e);
-		} catch (OperationApplicationException e) {
-			Log.e(TAG,"Error while inserting values", e);
+			try{
+				Uri inserturi = cr.insert(uri, row);
+				Log.v(TAG,"Inserting to " + inserturi.toString());
+			}catch(Exception e){
+				Log.e(TAG, "Knallt bei :" + row.toString(), e);
+			}
 		}
 	}
 }

@@ -1,26 +1,21 @@
 package net.pixeltronics.qischeck.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import net.pixeltronics.qischeck.R;
-import net.pixeltronics.qischeck.qis.MIParser;
-import net.pixeltronics.qischeck.qis.QIS;
-import net.pixeltronics.qischeck.qis.WebParser;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
+import net.pixeltronics.qischeck.db.DBContract;
+import net.pixeltronics.qischeck.db.GradesContract;
+import net.pixeltronics.qischeck.sync.SyncService;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.res.Configuration;
-import android.os.AsyncTask;
+import android.database.ContentObservable;
+import android.database.ContentObserver;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
-import android.util.Log;
-import android.widget.SimpleAdapter;
+import android.support.v4.widget.SimpleCursorAdapter;
 
 import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.Menu;
@@ -34,23 +29,36 @@ import com.actionbarsherlock.view.MenuItem;
  */
 public class GradesView extends SherlockListActivity {
 	
-	private QIS qis;
-	private ProgressDialog progress;
-	private List<Map<String,String>> grades;
+	private Cursor grades;
 	
     public static final String TAG = "GradesView";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
+    	updateView();
+    	registerContentObserver();
     }
 
-    @Override
+	private void registerContentObserver() {
+		ContentObserver co = new ContentObserver(new Handler()) {
+			@Override
+			public void onChange(boolean selfChange, Uri uri) {
+				updateView();
+			}
+		};
+		getContentResolver().registerContentObserver(
+				GradesContract.Grade.BASE_URI, true, co);
+
+	}
+
+	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
     	getSupportMenuInflater().inflate(R.menu.activity_grades_view, menu);
     	return true;
     }
 	
+    
     
     @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -64,7 +72,8 @@ public class GradesView extends SherlockListActivity {
 			break;
 		case R.id.menu_refresh:
 			grades = null;
-			updateView();
+			Intent i = new Intent(this, SyncService.class);
+			startService(i);
 			break;
 		case R.id.menu_logout:
 			logout();
@@ -72,58 +81,36 @@ public class GradesView extends SherlockListActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-    
-    @Override
-    public void onConfigurationChanged(Configuration newConfig){
-    	super.onConfigurationChanged(newConfig);
-    	updateView();
+
+
+    private void updateView() {
+    	grades = getContentResolver().query(GradesContract.Grade.BASE_URI, GradesContract.Grade.PROJECTION_FULL, null, null, null);
+    	setupAdapter(grades);
+	}
+
+	private void setupAdapter(Cursor grades){
+	    SimpleCursorAdapter gradesAdapter = new SimpleCursorAdapter(
+	    		this,
+	    		R.layout.grade_row,
+	    		grades,
+	    		new String[]{	DBContract.Table.Grade.ID,
+	    						DBContract.Table.Grade.COMMENT,
+	    						DBContract.Table.Grade.RESULT,
+	    						DBContract.Table.Grade.SEMESTER,
+	    						DBContract.Table.Grade.STATUS,
+	    						DBContract.Table.Grade.TITLE
+	    		},
+	    		new int[] { R.id.grade_id,
+	    					R.id.grade_note,
+	    					R.id.grade_result,
+	    					R.id.grade_semester,
+	    					R.id.grade_status,
+	    					R.id.grade_title
+				},
+				SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
+		);	
+	    setListAdapter(gradesAdapter);
     }
-
-    @Override
-	protected void onResume(){
-		super.onResume();
-		if(grades == null){
-	        updateView();
-		}
-	}
-
-	private void updateView() {
-	    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);        
-	    String uname = prefs.getString("username",null);
-	    String pword = prefs.getString("password",null);
-	    WebParser parser = new MIParser();
-		if(uname != null && pword != null){
-			//TODO
-	    }else{
-	    	Intent login = new Intent(this, LoginActivity.class);
-	    	startActivity(login);
-	    }
-	}
- 
-    private void setupAdapter(List<Map<String,String>> grades,boolean shouldRefresh){
-    	if(getListView().getAdapter() == null || shouldRefresh){
-		    SimpleAdapter gradesAdapter = new SimpleAdapter(
-		    		this,
-		    		grades,
-		    		R.layout.grade_row,
-		    		new String[] { 	"id",
-		    						"note",
-		    						"result",
-		    						"semester",
-		    						"status",
-		    						"title"
-		    		},
-		    		new int[] { R.id.grade_id,
-		    					R.id.grade_note,
-		    					R.id.grade_result,
-		    					R.id.grade_semester,
-		    					R.id.grade_status,
-		    					R.id.grade_title
-					}
-			);	
-		    setListAdapter(gradesAdapter);
-    	}
-	}
 
 	private void logout(){		
 		setListAdapter(null);
@@ -133,32 +120,9 @@ public class GradesView extends SherlockListActivity {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		Editor edit = prefs.edit();
 		edit.clear();
-		edit.commit();
-		
-		updateView();
-		
+		edit.commit();		
 	}
-    
-    private void showProgress(){
-		if(grades == null)
-			progress = ProgressDialog.show(this, "", "Warte kurz, deine Noten werden geladen...", true);
-	}
-
-	private void closeProgress(){
-		if(progress != null && progress.isShowing())
-			progress.dismiss();
-	}
-
-	private void showError(){
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage("Beim Download der Daten ist ein Fehler aufgetreten.")
-		       .setCancelable(false)
-		       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-		           public void onClick(DialogInterface dialog, int id) {
-		                // nothing here
-		           }
-		       });
-		builder.create().show();
-	}	
+	
+	
 
 }

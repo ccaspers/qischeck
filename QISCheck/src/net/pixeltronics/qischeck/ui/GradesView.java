@@ -4,16 +4,17 @@ import net.pixeltronics.qischeck.R;
 import net.pixeltronics.qischeck.db.DBContract;
 import net.pixeltronics.qischeck.db.GradesContract;
 import net.pixeltronics.qischeck.sync.SyncService;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
+import android.content.IntentFilter;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SimpleCursorAdapter;
 
 import com.actionbarsherlock.app.SherlockListActivity;
@@ -32,12 +33,37 @@ public class GradesView extends SherlockListActivity {
 	
     public static final String TAG = "GradesView";
 
+	private BroadcastReceiver receiver;
+
+	private LocalBroadcastManager localBroadcastManager;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
+    	registerBroadcastReceiver();
+    	checkLogin();
     	updateView();
     	registerContentObserver();
     }
+
+	private void registerBroadcastReceiver() {
+		receiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				logout();
+			}
+		};
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(SyncService.ACTION_LOGOUT);
+		localBroadcastManager = LocalBroadcastManager.getInstance(this);
+		localBroadcastManager.registerReceiver(receiver, filter);
+	}
+
+	private void checkLogin() {
+		if(!Settings.isLoggedIn(this)){
+			logout();
+		}
+	}
 
 	private void registerContentObserver() {
 		ContentObserver co = new ContentObserver(new Handler()) {
@@ -116,10 +142,7 @@ public class GradesView extends SherlockListActivity {
 		grades = null;		
 		getListView().invalidate();
 		
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		Editor edit = prefs.edit();
-		edit.clear();
-		edit.commit();		
+		Settings.clear(this);
 		
 		getContentResolver().delete(GradesContract.LOGOUT_URI, null, null);
 		
@@ -128,6 +151,11 @@ public class GradesView extends SherlockListActivity {
 		finish();
 	}
 	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		localBroadcastManager.unregisterReceiver(receiver);
+	}
 	
 
 }

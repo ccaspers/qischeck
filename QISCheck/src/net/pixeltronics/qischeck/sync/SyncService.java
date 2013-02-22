@@ -11,17 +11,15 @@ import net.pixeltronics.qischeck.ui.Settings;
 
 import org.apache.http.client.ClientProtocolException;
 
-import android.R;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
@@ -29,7 +27,9 @@ import android.widget.Toast;
 public class SyncService extends IntentService {
 
 	public static final String TAG = SyncService.class.getName();
+	public static final String ACTION_LOGOUT = TAG+"LOGOUT";
 	private NotificationManager mNotificationManager;
+	
 	public SyncService() {
 		super(TAG);
 	}
@@ -49,10 +49,9 @@ public class SyncService extends IntentService {
 
 	private void showNotification(int notifyID) {
 		NotificationCompat.Builder mNotifyBuilder = new NotificationCompat.Builder(this)
-		    .setContentTitle("New Message")
-		    .setContentText("You've received new messages.")
-		    .setSmallIcon(R.drawable.ic_menu_upload)
-		    .setContentText("Syncing Grades");
+		    .setContentTitle("QIS Sync")
+		    .setContentText("Deine Noten werden aktualisiert")
+		    .setTicker("QIS Sync gestartet");
 		mNotificationManager.notify( notifyID, mNotifyBuilder.build());
 		
 	}
@@ -76,8 +75,11 @@ public class SyncService extends IntentService {
 		}catch(IOException e2){
 			toast("IOException");
 			Log.e(TAG,"Error while syncing grades", e2);
-		}finally{
-			
+		}catch(ArrayIndexOutOfBoundsException e3){
+			Log.v(TAG, "Login fehlgeschlagen");
+			LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
+			Intent logout = new Intent(ACTION_LOGOUT);
+			localBroadcastManager.sendBroadcast(logout);
 		}
 	}
 

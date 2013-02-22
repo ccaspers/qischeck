@@ -22,7 +22,7 @@ public class LauncherActivity extends Activity {
 	protected void onResume() {
 		Log.v("LAUNCHER", "onResume LAUNCHER");
 		super.onResume();
-		if(isLoggedIn()){
+		if(Settings.isLoggedIn(getApplicationContext())){
 			showGradesActivity();
 		}else{
 			showLoginActivity();
@@ -45,9 +45,4 @@ public class LauncherActivity extends Activity {
 		finish();
 	}
 	
-	private boolean isLoggedIn(){
-	    String uname = Settings.getUserName(getApplicationContext());
-	    String pword = Settings.getPassword(getApplicationContext());
-	    return uname != null && pword != null;
-	}
 }

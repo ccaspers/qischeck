@@ -7,7 +7,6 @@ import net.pixeltronics.qischeck.sync.SyncService;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.database.ContentObservable;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;

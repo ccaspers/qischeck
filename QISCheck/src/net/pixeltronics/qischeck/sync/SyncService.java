@@ -1,7 +1,6 @@
 package net.pixeltronics.qischeck.sync;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import net.pixeltronics.qischeck.db.GradesContract;
@@ -14,15 +13,12 @@ import org.apache.http.client.ClientProtocolException;
 import android.R;
 import android.app.IntentService;
 import android.app.NotificationManager;
-import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.OperationApplicationException;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;

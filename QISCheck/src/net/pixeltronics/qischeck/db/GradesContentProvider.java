@@ -9,7 +9,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
-import android.util.Log;
 
 /**
  * @author Christian
@@ -17,7 +16,7 @@ import android.util.Log;
  */
 public class GradesContentProvider extends ContentProvider {
 	
-	private static final String TAG ="GradesProvider";
+	public static final String TAG ="GradesProvider";
 
 	private static final String MULTITYPE = "vnd.android.cursor.dir";
 	private static final String ITEMTYPE  = "vnd.android.cursor.item";

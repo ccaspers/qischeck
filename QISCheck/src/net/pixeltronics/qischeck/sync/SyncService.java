@@ -7,6 +7,7 @@ import net.pixeltronics.qischeck.db.GradesContract;
 import net.pixeltronics.qischeck.qis.MIParser;
 import net.pixeltronics.qischeck.qis.QIS;
 import net.pixeltronics.qischeck.qis.WebParser;
+import net.pixeltronics.qischeck.ui.Settings;
 
 import org.apache.http.client.ClientProtocolException;
 
@@ -57,9 +58,8 @@ public class SyncService extends IntentService {
 	}
 
 	private void downloadGrades() {
-	    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);        
-	    String uname = prefs.getString("username",null);
-	    String pword = prefs.getString("password",null);
+	    String uname = Settings.getUserName(getApplicationContext());
+	    String pword = Settings.getPassword(getApplicationContext());
 	    
 		WebParser parser = new MIParser();
 		QIS qis = new QIS(uname, pword, parser);
@@ -88,7 +88,7 @@ public class SyncService extends IntentService {
 	}
 
 	
-// BATCH MODE
+// TODO: BATCH MODE
 //	private void insertValues(Uri uri, List<ContentValues> values){
 //		ContentResolver cr = getContentResolver();
 //		ArrayList<ContentProviderOperation> ops =  new ArrayList<ContentProviderOperation>();

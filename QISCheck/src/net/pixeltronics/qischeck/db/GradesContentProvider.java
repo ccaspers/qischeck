@@ -4,6 +4,7 @@ import net.pixeltronics.qischeck.db.GradesContract.Category;
 import net.pixeltronics.qischeck.db.GradesContract.Grade;
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -26,6 +27,7 @@ public class GradesContentProvider extends ContentProvider {
 	public static final int CATEGORIES 			= 2;
 	public static final int CATEGORY_BY_ID 		= 3;
 	public static final int GRADES_BY_CATEGORY	= 4;
+	public static final int LOGOUT				= 5;
 	
 	private static final String GRADE_DIR_TYPE = MULTITYPE + "/" + "grade";
 	private static final String GRADE_ITEM_TYPE = ITEMTYPE + "/" + "grade";  
@@ -53,6 +55,7 @@ public class GradesContentProvider extends ContentProvider {
 		uriMatcher .addURI(GradesContract.AUTH, GradesContract.CATEGORIES, CATEGORIES);
 		uriMatcher .addURI(GradesContract.AUTH, GradesContract.CATEGORIES + "/#", CATEGORY_BY_ID);
 		uriMatcher .addURI(GradesContract.AUTH, GradesContract.CATEGORIES + "/#/" + GradesContract.GRADES, GRADES_BY_CATEGORY);
+		uriMatcher .addURI(GradesContract.AUTH, GradesContract.LOGOUT, LOGOUT);
 	}
 
 	/* (non-Javadoc)
@@ -60,8 +63,14 @@ public class GradesContentProvider extends ContentProvider {
 	 */
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
+		switch(uriMatcher.match(uri)){
+		case LOGOUT:
+			deleteDatabase();
+			getContext().getContentResolver().notifyChange(uri, null);
+			return 1;
+		default:
+			return -1;
+		}
 	}
 
 	/* (non-Javadoc)
@@ -158,6 +167,16 @@ public class GradesContentProvider extends ContentProvider {
 			String[] selectionArgs) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+	
+	/**
+	 * Clears the database.
+	 */
+	private void deleteDatabase() {
+		mOpenHelper.close();
+		Context context = getContext();
+		context.deleteDatabase(DBContract.DBName);
+		onCreate();
 	}
 
 }

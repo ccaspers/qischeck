@@ -120,6 +120,12 @@ public class GradesView extends SherlockListActivity {
 		Editor edit = prefs.edit();
 		edit.clear();
 		edit.commit();		
+		
+		getContentResolver().delete(GradesContract.LOGOUT_URI, null, null);
+		
+		Intent intent = new Intent(this, LoginActivity.class);
+		startActivity(intent);
+		finish();
 	}
 	
 	

@@ -1,6 +1,8 @@
 package net.pixeltronics.qischeck.ui;
 
 import net.pixeltronics.qischeck.R;
+import net.pixeltronics.qischeck.sync.SyncService;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
@@ -34,6 +36,12 @@ public class LoginActivity extends SherlockActivity {
     	editor.putString("password", password);
     	editor.commit();
     	    	
+    	//Sync on Login
+		Intent sync = new Intent(this, SyncService.class);
+		startService(sync);
+		
+		Intent intent = new Intent(this, GradesView.class);
+		startActivity(intent);
     	finish();
 
     }

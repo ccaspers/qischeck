@@ -10,7 +10,10 @@ public class GradesContract {
 	public static final Uri BASE_URI = Uri.parse("content://" + AUTH);
 	
 	public static final String GRADES = "Grades";
-	public static final String CATEGORIES = "Categories"; 
+	public static final String CATEGORIES = "Categories";
+	public static final String LOGOUT = "LOGOUT"; 
+	
+	public static final Uri LOGOUT_URI = Uri.withAppendedPath(BASE_URI, LOGOUT);
 	
 	public static class Grade{
 		private Grade(){};

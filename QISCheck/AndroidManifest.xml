@@ -19,11 +19,6 @@
         <activity
             android:name="net.pixeltronics.qischeck.ui.GradesView"
             android:label="@string/title_activity_grades_view" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name="net.pixeltronics.qischeck.ui.LoginActivity"
@@ -31,7 +26,14 @@
         <activity
             android:name="net.pixeltronics.qischeck.ui.Settings"
             android:label="@string/title_activity_settings" />
-        <!-- created by Christian at 2013-02-22 01:53:40 -->
+        <activity android:name=".LauncherActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <provider
             android:name="net.pixeltronics.qischeck.db.GradesContentProvider"
             android:authorities="net.pixeltronics.qischeck.db"
@@ -40,8 +42,7 @@
         <service
             android:name="net.pixeltronics.qischeck.sync.SyncService"
             android:enabled="true"
-            android:exported="false" >
-        </service>
+            android:exported="false" />
     </application>
 
 </manifest>

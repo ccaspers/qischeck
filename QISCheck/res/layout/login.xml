@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="#ffffff" >
+        android:layout_height="wrap_content">
 
         <!-- Header Starts -->
 
@@ -36,7 +35,6 @@
         <!-- Login Form -->
 
         <LinearLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/header"
@@ -48,8 +46,7 @@
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/username"
-                android:textColor="#372c24" />
+                android:text="@string/username" />
 
             <EditText
                 android:id="@+id/username"
@@ -64,8 +61,7 @@
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/password"
-                android:textColor="#372c24" />
+                android:text="@string/password" />
 
             <EditText
                 android:id="@+id/password"

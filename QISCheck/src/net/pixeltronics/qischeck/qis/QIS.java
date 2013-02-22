@@ -174,14 +174,14 @@ public class QIS {
 	 */
 	private String inputStream2String(InputStream instream)
 			throws IOException {
-		String page = "";
 		InputStreamReader inR = new InputStreamReader(instream);
 		BufferedReader buf = new BufferedReader(inR);
+		StringBuilder builder = new StringBuilder();
 		String line;
 		while ((line = buf.readLine()) != null) {
-			page += line;
+			builder.append(line);
 		}
-		return page;
+		return builder.toString();
 	}
 	
 	/**

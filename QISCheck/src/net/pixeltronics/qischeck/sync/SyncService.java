@@ -13,6 +13,7 @@ import net.pixeltronics.qischeck.ui.Settings;
 
 import org.apache.http.client.ClientProtocolException;
 
+import android.annotation.SuppressLint;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -22,20 +23,24 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
 
+@SuppressLint("ShowToast")
 public class SyncService extends IntentService {
 
 	public static final String TAG = SyncService.class.getName();
 	public static final String ACTION_LOGOUT = TAG+"LOGOUT";
 	private NotificationManager mNotificationManager;
+	private Handler mHandler;
 	
 	public SyncService() {
 		super(TAG);
+		 mHandler = new Handler();
 	}
 
 	@Override
@@ -93,10 +98,16 @@ public class SyncService extends IntentService {
 		}
 	}
 
-	private void toast(String msg) {
-		Toast toast = Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT);
-		toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 50);
-		toast.show();
+	private void toast(final String msg) {
+		final Context ctx = getApplicationContext();
+		mHandler.post(new Runnable() {
+			@Override
+			public void run() {
+				Toast toast = Toast.makeText(ctx, msg, Toast.LENGTH_SHORT);
+				toast.setGravity(Gravity.TOP|Gravity.CENTER_HORIZONTAL, 0, 50);
+				toast.show();
+			}
+		});
 	}
 
 	

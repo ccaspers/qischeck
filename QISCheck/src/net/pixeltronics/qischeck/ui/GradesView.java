@@ -37,6 +37,8 @@ public class GradesView extends SherlockListActivity {
 
 	private LocalBroadcastManager localBroadcastManager;
 
+	private SimpleCursorAdapter gradesAdapter;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
@@ -110,11 +112,15 @@ public class GradesView extends SherlockListActivity {
 
     private void updateView() {
     	grades = getContentResolver().query(GradesContract.Grade.BASE_URI, GradesContract.Grade.PROJECTION_FULL, null, null, null);
-    	setupAdapter(grades);
+    	if(gradesAdapter == null){
+    		setupAdapter(grades);
+    	}else{
+    		gradesAdapter.swapCursor(grades).close();
+    	}
 	}
 
 	private void setupAdapter(Cursor grades){
-	    SimpleCursorAdapter gradesAdapter = new SimpleCursorAdapter(
+	    gradesAdapter = new SimpleCursorAdapter(
 	    		this,
 	    		R.layout.grade_row,
 	    		grades,
@@ -153,6 +159,7 @@ public class GradesView extends SherlockListActivity {
 	protected void onDestroy() {
 		super.onDestroy();
 		localBroadcastManager.unregisterReceiver(receiver);
+		gradesAdapter.getCursor().close();
 	}
 	
 

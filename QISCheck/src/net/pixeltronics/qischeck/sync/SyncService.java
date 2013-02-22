@@ -3,6 +3,7 @@ package net.pixeltronics.qischeck.sync;
 import java.io.IOException;
 import java.util.List;
 
+import net.pixeltronics.qischeck.R;
 import net.pixeltronics.qischeck.db.GradesContract;
 import net.pixeltronics.qischeck.qis.MIParser;
 import net.pixeltronics.qischeck.qis.QIS;
@@ -12,7 +13,9 @@ import net.pixeltronics.qischeck.ui.Settings;
 import org.apache.http.client.ClientProtocolException;
 
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -50,9 +53,14 @@ public class SyncService extends IntentService {
 	private void showNotification(int notifyID) {
 		NotificationCompat.Builder mNotifyBuilder = new NotificationCompat.Builder(this)
 		    .setContentTitle("QIS Sync")
+		    .setSmallIcon(R.drawable.notification)
 		    .setContentText("Deine Noten werden aktualisiert")
-		    .setTicker("QIS Sync gestartet");
-		mNotificationManager.notify( notifyID, mNotifyBuilder.build());
+		    .setTicker("QIS Sync gestartet")
+		    .setContentIntent(PendingIntent.getService(getApplicationContext(), 0, null, PendingIntent.FLAG_ONE_SHOT));
+		
+		Notification notification = mNotifyBuilder.build();
+		mNotificationManager.notify( notifyID, notification);
+		
 		
 	}
 

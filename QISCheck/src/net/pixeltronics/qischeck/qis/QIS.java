@@ -20,6 +20,7 @@ import org.apache.http.impl.client.DefaultRedirectHandler;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HttpContext;
 
+import android.content.ContentValues;
 import android.util.Log;
 
 /**
@@ -84,11 +85,9 @@ public class QIS {
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	public List<Map<String,String>> getGrades() throws ClientProtocolException, IOException{
-		String url = GRADES_URL.replace("${ASI}", this.asi);
-		System.out.println("URL: "+url);
-		pageCache = getPageContents(pageRequest(url, null, true));
-		List<Map<String,String>> grades = parser.readGrades(pageCache);
+	public List<ContentValues> getGrades() throws ClientProtocolException, IOException{
+		cacheGrades();
+		List<ContentValues> grades = parser.readGrades(pageCache);
 		return grades;
 	}
 	
@@ -100,7 +99,7 @@ public class QIS {
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	public List<Map<String,String>> getCategories() throws ClientProtocolException, IOException{
+	public List<ContentValues> getCategories() throws ClientProtocolException, IOException{
 		cacheGrades();
 		return parser.readCategories(pageCache);
 	}
@@ -108,7 +107,6 @@ public class QIS {
 	private void cacheGrades() throws ClientProtocolException, IOException {
 		if(pageCache == null){
 			String url = GRADES_URL.replace("${ASI}", this.asi);
-			System.out.println("URL: "+url);
 			pageCache = getPageContents(pageRequest(url, null, true));
 		}
 	}

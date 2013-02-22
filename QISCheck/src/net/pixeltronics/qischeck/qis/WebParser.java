@@ -1,7 +1,8 @@
 package net.pixeltronics.qischeck.qis;
 
 import java.util.List;
-import java.util.Map;
+
+import android.content.ContentValues;
 
 public interface WebParser {
 
@@ -11,7 +12,7 @@ public interface WebParser {
 	 * @param html Notenspiegel
 	 * @return Liste aus Noten
 	 */
-	public List<Map<String, String>> readGrades(String html);
+	public List<ContentValues> readGrades(String html);
 
 	/**
 	 * Parsed den HTML-Notenspiegel in eine Liste aus Key-Valuepaaren für Fächer
@@ -19,6 +20,6 @@ public interface WebParser {
 	 * @param html Notenspiegel
 	 * @return Liste aus Fächern
 	 */
-	public List<Map<String, String>> readCategories(String pageCache);
+	public List<ContentValues> readCategories(String pageCache);
 
 }

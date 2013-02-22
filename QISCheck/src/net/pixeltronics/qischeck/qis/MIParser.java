@@ -1,23 +1,25 @@
 package net.pixeltronics.qischeck.qis;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import net.pixeltronics.qischeck.db.GradesContract;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.content.ContentValues;
+
 public class MIParser implements WebParser {
 	/* (non-Javadoc)
 	 * @see net.pixeltronics.qischeck.WebParser#readGrades(java.lang.String)
 	 */
 	@Override
-	public List<Map<String,String>> readGrades(String html){
+	public List<ContentValues> readGrades(String html){
 		html = html.replaceAll("\n|\r|\t|(&nbsp;)|(<!--\\s*-->)", "");
-		List<Map<String,String>> parsedTable = new ArrayList<Map<String,String>>();
+		List<ContentValues> parsedTable = new ArrayList<ContentValues>();
 		
 		Document doc = Jsoup.parse(html);
 		
@@ -38,8 +40,8 @@ public class MIParser implements WebParser {
 					 * Prüfungsnr. 	   Prüfungstext 	Semester  	Termin 	Note 	Status 	Credit Points 	Vermerk 	Versuch 
 					 * 
 					 */
-		    		String[] mapping = new String[] {"id", "title", "semester", "date", "result", "status", "creditpoints", "comment", "attempt" };
-					Map<String,String> g = new HashMap<String,String>();
+		    		String[] mapping = GradesContract.Grade.PROJECTION_FULL;
+					ContentValues g = new ContentValues();
 					for(int i = 0; i < mapping.length;i++){
 						g.put(mapping[i],cells.get(i));
 					}
@@ -55,9 +57,9 @@ public class MIParser implements WebParser {
 	 * @see net.pixeltronics.qischeck.WebParser#readCategories(java.lang.String)
 	 */
 	@Override
-	public List<Map<String, String>> readCategories(String html) {
+	public List<ContentValues> readCategories(String html) {
 		html = html.replaceAll("\n|\r|\t|(&nbsp;)|(<!--\\s*-->)", "");
-		List<Map<String,String>> parsedTable = new ArrayList<Map<String,String>>();
+		List<ContentValues> parsedTable = new ArrayList<ContentValues>();
 		
 		Document doc = Jsoup.parse(html);
 		
@@ -80,8 +82,8 @@ public class MIParser implements WebParser {
 					 * Prüfungsnr. 	   Prüfungstext 	Semester  	Termin 	Note 	Status 	Credit Points 	Vermerk 	Versuch 
 					 * 
 					 */
-		    		String[] mapping = new String[] {"id", "title", "result", "status", "creditpoints" };
-					Map<String,String> g = new HashMap<String,String>();
+		    		String[] mapping = GradesContract.Category.PROJECTION_FULL;
+					ContentValues g = new ContentValues();
 					for(int i = 0; i < cells.size();i++){
 						g.put(mapping[i],cells.get(i));
 					}

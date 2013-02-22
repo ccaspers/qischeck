@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.pixeltronics.qischeck"
     android:installLocation="preferExternal"
@@ -26,12 +27,21 @@
         </activity>
         <activity
             android:name="net.pixeltronics.qischeck.ui.LoginActivity"
-            android:label="@string/title_activity_main" >
-        </activity>
+            android:label="@string/title_activity_main" />
         <activity
             android:name="net.pixeltronics.qischeck.ui.Settings"
-            android:label="@string/title_activity_settings" >
-        </activity>
+            android:label="@string/title_activity_settings" />
+        <!-- created by Christian at 2013-02-22 01:53:40 -->
+        <provider
+            android:name="net.pixeltronics.qischeck.db.GradesContentProvider"
+            android:authorities="net.pixeltronics.qischeck.db"
+            android:exported="false" />
+
+        <service
+            android:name="net.pixeltronics.qischeck.sync.SyncService"
+            android:enabled="true"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>

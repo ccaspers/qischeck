@@ -34,52 +34,6 @@ import com.actionbarsherlock.view.MenuItem;
  */
 public class GradesView extends SherlockListActivity {
 	
-	/**
-	 * AsyncTask um Noten unabhängig vom UI-Thread abzurufen
-	 * 
-	 * @author Christian Caspers
-	 *
-	 */
-	private class AsyncGrades extends AsyncTask<String, Integer, List<Map<String,String>>> {
- 	
-		private boolean errorOccured = false;
-		private boolean shouldRefresh = false;
-    	@Override
-		protected void onPreExecute(){
-			super.onPreExecute();
-				showProgress();
-		}
-
-		@Override
-		protected List<Map<String,String>> doInBackground(String... params) {
-			if(grades == null){
-				grades = new ArrayList<Map<String,String>>();
-		        try{
-			        qis.login();
-			        grades = qis.getGrades();
-			        qis.logout();
-					if(getListAdapter() != null){
-						shouldRefresh = true;
-					}
-		        }catch(Exception e){
-		        	Log.e(TAG, "fehler mit asi", e);
-		        	errorOccured = true;
-		        }
-			}
-	        return grades;
-		}
-    	
-		@Override		
-		protected void onPostExecute(List<Map<String,String>> result){
-			super.onPostExecute(result);
-			setupAdapter(result,shouldRefresh);
-			closeProgress();
-			if(errorOccured){
-				showError();
-			}
-		}
-    	
-    }
 	private QIS qis;
 	private ProgressDialog progress;
 	private List<Map<String,String>> grades;
@@ -139,8 +93,7 @@ public class GradesView extends SherlockListActivity {
 	    String pword = prefs.getString("password",null);
 	    WebParser parser = new MIParser();
 		if(uname != null && pword != null){
-	    	qis = new QIS(uname,pword,parser);
-	    	new AsyncGrades().execute("");
+			//TODO
 	    }else{
 	    	Intent login = new Intent(this, LoginActivity.class);
 	    	startActivity(login);

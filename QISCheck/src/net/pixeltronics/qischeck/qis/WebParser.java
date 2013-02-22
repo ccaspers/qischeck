@@ -1,4 +1,4 @@
-package net.pixeltronics.qischeck;
+package net.pixeltronics.qischeck.qis;
 
 import java.util.List;
 import java.util.Map;

@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import net.pixeltronics.qischeck.MIParser;
-import net.pixeltronics.qischeck.QIS;
 import net.pixeltronics.qischeck.R;
-import net.pixeltronics.qischeck.WebParser;
+import net.pixeltronics.qischeck.qis.MIParser;
+import net.pixeltronics.qischeck.qis.QIS;
+import net.pixeltronics.qischeck.qis.WebParser;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;

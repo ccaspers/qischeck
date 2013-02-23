@@ -130,12 +130,7 @@ public class SyncService extends IntentService {
 	private void insertValues(Uri uri, List<ContentValues> values){
 		ContentResolver cr = getContentResolver();
 		for(ContentValues row : values){
-			try{
-				Uri inserturi = cr.insert(uri, row);
-				Log.v(TAG,"Inserting to " + inserturi.toString());
-			}catch(Exception e){
-				Log.e(TAG, "Knallt bei :" + row.toString(), e);
-			}
+			cr.insert(uri, row);
 		}
 	}
 }

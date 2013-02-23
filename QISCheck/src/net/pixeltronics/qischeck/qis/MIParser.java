@@ -12,7 +12,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import android.content.ContentValues;
-import android.util.Log;
 
 public class MIParser implements WebParser {
 	
@@ -78,7 +77,6 @@ public class MIParser implements WebParser {
 		ContentValues g = new ContentValues();
 		for(int i = 0; i < cells.size();i++){
 			g.put(mapping[i],cells.get(i));
-			Log.v("PARSER", "Nullvalue " + (cells.get(i)==null));
 		}
 		return g;
 	}

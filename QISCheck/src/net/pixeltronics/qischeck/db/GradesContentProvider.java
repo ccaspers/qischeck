@@ -3,6 +3,7 @@ package net.pixeltronics.qischeck.db;
 import net.pixeltronics.qischeck.db.GradesContract.Category;
 import net.pixeltronics.qischeck.db.GradesContract.Grade;
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
@@ -10,6 +11,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.util.Log;
 
 /**
  * @author Christian
@@ -110,11 +112,11 @@ public class GradesContentProvider extends ContentProvider {
 		
 		switch(uriMatcher.match(uri)){
 		case GRADES: 
-			table 	= DBContract.Table.GRADE;
+			table 		= DBContract.Table.GRADE;
 			changedUri 	= Grade.BASE_URI ;
 			break;
 		case CATEGORIES:
-			table 	= DBContract.Table.CATEGORY;
+			table 		= DBContract.Table.CATEGORY;
 			changedUri 	= Category.BASE_URI;
 			break;
 		default: return null;
@@ -124,6 +126,7 @@ public class GradesContentProvider extends ContentProvider {
 		
 		if(id != -1){
 			getContext().getContentResolver().notifyChange(changedUri, null);
+			Log.v(TAG,"ContentObverservers notified, change happened on " + changedUri.toString());
 			return Uri.withAppendedPath(changedUri, String.valueOf(id));
 		}else{
 			return null;
@@ -155,8 +158,10 @@ public class GradesContentProvider extends ContentProvider {
 		default:
 			return null;
 		}
-		
-		return db.query(table, projection, selection, selectionArgs, null, null, null);
+		ContentResolver cr = getContext().getContentResolver();
+		Cursor cursor = db.query(table, projection, selection, selectionArgs, null, null, null);
+		cursor.setNotificationUri(cr, uri);
+		return cursor;
 	}
 
 	/* (non-Javadoc)

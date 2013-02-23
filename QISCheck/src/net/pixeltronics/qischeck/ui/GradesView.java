@@ -8,16 +8,19 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
 
-import com.actionbarsherlock.app.SherlockListActivity;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
@@ -27,25 +30,25 @@ import com.actionbarsherlock.view.MenuItem;
  * @author Christian Caspers
  *
  */
-public class GradesView extends SherlockListActivity {
+public class GradesView extends SherlockFragmentActivity implements LoaderCallbacks<Cursor> {
 	
-	private Cursor grades;
-	
+	private static final int LIST_VIEW = R.id.grades_list;
+
     public static final String TAG = "GradesView";
 
 	private BroadcastReceiver receiver;
-
 	private LocalBroadcastManager localBroadcastManager;
-
 	private SimpleCursorAdapter gradesAdapter;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	registerBroadcastReceiver();
     	checkLogin();
-    	updateView();
-    	registerContentObserver();
+    	setContentView(R.layout.grades_list);
+    	setupAdapter();
+    	getSupportLoaderManager().initLoader(0, null, this);
     }
 
 	private void registerBroadcastReceiver() {
@@ -67,18 +70,6 @@ public class GradesView extends SherlockListActivity {
 		}
 	}
 
-	private void registerContentObserver() {
-		ContentObserver co = new ContentObserver(new Handler()) {
-			@Override
-			public void onChange(boolean selfChange, Uri uri) {
-				updateView();
-			}
-		};
-		getContentResolver().registerContentObserver(
-				GradesContract.Grade.BASE_URI, true, co);
-
-	}
-
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
     	getSupportMenuInflater().inflate(R.menu.activity_grades_view, menu);
@@ -98,7 +89,6 @@ public class GradesView extends SherlockListActivity {
 			startActivity(intent);
 			break;
 		case R.id.menu_refresh:
-			grades = null;
 			Intent i = new Intent(this, SyncService.class);
 			startService(i);
 			break;
@@ -110,20 +100,11 @@ public class GradesView extends SherlockListActivity {
 	}
 
 
-    private void updateView() {
-    	grades = getContentResolver().query(GradesContract.Grade.BASE_URI, GradesContract.Grade.PROJECTION_FULL, null, null, null);
-    	if(gradesAdapter == null){
-    		setupAdapter(grades);
-    	}else{
-    		gradesAdapter.swapCursor(grades).close();
-    	}
-	}
-
-	private void setupAdapter(Cursor grades){
+	private void setupAdapter(){
 	    gradesAdapter = new SimpleCursorAdapter(
 	    		this,
 	    		R.layout.grade_row,
-	    		grades,
+	    		null,
 	    		new String[]{	DBContract.Table.Grade.ID,
 	    						DBContract.Table.Grade.RESULT,
 	    						DBContract.Table.Grade.SEMESTER,
@@ -143,7 +124,6 @@ public class GradesView extends SherlockListActivity {
 
 	private void logout(){		
 		setListAdapter(null);
-		grades = null;		
 		getListView().invalidate();
 		
 		Settings.clear(this);
@@ -159,8 +139,32 @@ public class GradesView extends SherlockListActivity {
 	protected void onDestroy() {
 		super.onDestroy();
 		localBroadcastManager.unregisterReceiver(receiver);
-		gradesAdapter.getCursor().close();
+	}
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int ID, Bundle bundle) {
+		Uri baseUri = GradesContract.Grade.BASE_URI;
+		return new CursorLoader(this, baseUri,	GradesContract.Grade.PROJECTION_FULL, null, null, null);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		gradesAdapter.swapCursor(cursor);
+		getListView().invalidate();
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> arg0) {
+		gradesAdapter.swapCursor(null);
 	}
 	
+	public ListView getListView(){
+		return (ListView)findViewById(LIST_VIEW);
+	}
+	
+	public void setListAdapter(BaseAdapter adapter){
+		ListView v = getListView();
+		v.setAdapter(adapter);
+	}
 
 }

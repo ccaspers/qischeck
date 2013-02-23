@@ -16,10 +16,10 @@ import android.content.ContentValues;
 public class MIParser implements WebParser {
 	
 	private static final String[] gradeMapping =  
-			new String[]{Grade.ID, Grade.TITLE, Grade.SEMESTER, Grade.DATE, Grade.RESULT, Grade.STATUS, Grade.CP, Grade.COMMENT, Grade.ATTEMPT};
+			new String[]{Grade._ID, Grade.TITLE, Grade.SEMESTER, Grade.DATE, Grade.RESULT, Grade.STATUS, Grade.CP, Grade.COMMENT, Grade.ATTEMPT};
 	
 	private static final String[] categoryMapping =
-			new String[] {Category.ID, Category.TITLE, Category.RESULT, Category.STATUS, Category.CP};
+			new String[] {Category._ID, Category.TITLE, Category.RESULT, Category.STATUS, Category.CP};
 
 	/* (non-Javadoc)
 	 * @see net.pixeltronics.qischeck.WebParser#readGrades(java.lang.String)

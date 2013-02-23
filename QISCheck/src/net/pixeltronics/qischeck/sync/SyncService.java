@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.pixeltronics.qischeck.LauncherActivity;
-import net.pixeltronics.qischeck.R;
 import net.pixeltronics.qischeck.db.GradesContract;
 import net.pixeltronics.qischeck.qis.MIParser;
 import net.pixeltronics.qischeck.qis.QIS;
@@ -16,19 +14,17 @@ import org.apache.http.client.ClientProtocolException;
 
 import android.annotation.SuppressLint;
 import android.app.IntentService;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.OperationApplicationException;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.RemoteException;
-import android.support.v4.app.NotificationCompat;
+import android.provider.BaseColumns;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Gravity;
@@ -39,7 +35,6 @@ public class SyncService extends IntentService {
 
 	public static final String TAG = SyncService.class.getName();
 	public static final String ACTION_LOGOUT = TAG+"LOGOUT";
-	private NotificationManager mNotificationManager;
 	private Handler mHandler;
 	
 	public SyncService() {
@@ -49,30 +44,9 @@ public class SyncService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		int notifyID = 1;
-		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		showNotification(notifyID);
+		NotificationUtil.showSyncInProgressNotification(this);
 		downloadGrades();
-		cancelNotification(notifyID);
-	}
-
-	private void cancelNotification(int notifyID) {
-		mNotificationManager.cancel(notifyID);
-	}
-
-	private void showNotification(int notifyID) {
-		Intent intent = new Intent(getApplicationContext(), LauncherActivity.class);
-		NotificationCompat.Builder mNotifyBuilder = new NotificationCompat.Builder(this)
-		    .setContentTitle("QIS Sync")
-		    .setSmallIcon(R.drawable.notification)
-		    .setContentText("Deine Noten werden aktualisiert")
-		    .setTicker("QIS Sync gestartet")
-		    .setContentIntent(PendingIntent.getService(getApplicationContext(), 0, intent, PendingIntent.FLAG_ONE_SHOT));
-		
-		Notification notification = mNotifyBuilder.build();
-		mNotificationManager.notify( notifyID, notification);
-		
-		
+		NotificationUtil.cancelNotification(this,NotificationUtil.ID_SYNC);
 	}
 
 	private void downloadGrades() {
@@ -83,10 +57,15 @@ public class SyncService extends IntentService {
 		QIS qis = new QIS(uname, pword, parser);
 		try{
 	        qis.login();
+	        
 	        List<ContentValues> categories = qis.getCategories();
+	        notificationForNewRows(GradesContract.Category.BASE_URI,categories);
+	        insertValues(GradesContract.Category.BASE_URI, categories);
+	        
 	        List<ContentValues> grades = qis.getGrades();
-			insertValues(GradesContract.Category.BASE_URI, categories);
+	        notificationForNewRows(GradesContract.Grade.BASE_URI, grades);
 	        insertValues(GradesContract.Grade.BASE_URI, grades);
+	        
 	        qis.logout();
 		}catch(ClientProtocolException e1){
 			toast("ClientProtocolException");
@@ -100,6 +79,33 @@ public class SyncService extends IntentService {
 			Intent logout = new Intent(ACTION_LOGOUT);
 			localBroadcastManager.sendBroadcast(logout);
 		}
+	}
+
+	private void notificationForNewRows(Uri baseUri, List<ContentValues> values) {
+		ArrayList<Integer> webIds = new ArrayList<Integer>();
+		ArrayList<Integer> dbIds = getDatabaseIDList(baseUri);
+		
+		for(ContentValues v : values){
+			webIds.add(v.getAsInteger(BaseColumns._ID));
+		}
+		webIds.removeAll(dbIds);
+		
+		if(webIds.size() > 0){
+			NotificationUtil.showNewGradesReceivedNotification(this);
+		}
+	}
+
+	private ArrayList<Integer> getDatabaseIDList(Uri baseUri) {
+		ContentResolver cr = getContentResolver();
+		ArrayList<Integer> dbIds = new ArrayList<Integer>();
+		Cursor query = cr.query(baseUri, new String[]{BaseColumns._ID}, null, null, null);
+		if(query.moveToFirst()){
+			do{
+				dbIds.add(query.getInt(0));
+			}while(query.moveToNext());
+		}
+		query.close();
+		return dbIds;
 	}
 
 	private void toast(final String msg) {

@@ -19,7 +19,7 @@ public class GradesContract {
 		private Grade(){};
 		public static final Uri BASE_URI = Uri.withAppendedPath(GradesContract.BASE_URI, GRADES);
 		public static final String[] PROJECTION_FULL = new String[] {
-				Table.Grade.ID, 
+				Table.Grade._ID, 
 				Table.Grade.TITLE, 
 				Table.Grade.SEMESTER,
 				Table.Grade.STATUS, 
@@ -36,7 +36,7 @@ public class GradesContract {
 		private Category(){};
 		public static final Uri BASE_URI = Uri.withAppendedPath(GradesContract.BASE_URI, CATEGORIES);
 		public static final String[] PROJECTION_FULL = new String[]{
-				Table.Category.ID,
+				Table.Category._ID,
 				Table.Category.TITLE,
 				Table.Category.RESULT,
 				Table.Category.STATUS,

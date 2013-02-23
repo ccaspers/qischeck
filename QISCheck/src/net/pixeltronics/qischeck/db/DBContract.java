@@ -1,5 +1,7 @@
 package net.pixeltronics.qischeck.db;
 
+import android.provider.BaseColumns;
+
 public final class DBContract {
 	private DBContract(){};
 	
@@ -14,17 +16,16 @@ public final class DBContract {
 		
 		private static final String CREATE_TABLE = "CREATE TABLE ";
 		
-		public static final class Category{
+		public static final class Category implements BaseColumns{
 			private Category(){};
 			
-			public static final String ID 		= "_id";
 			public static final String TITLE 	= "title";
 			public static final String RESULT 	= "result";
 			public static final String STATUS 	= "status";
 			public static final String CP 		= "creditpoints";
 			
 			public static final String CREATE = CREATE_TABLE + CATEGORY + " ("
-					+ ID		+ " INTEGER PRIMARY KEY" 	+ ", "
+					+ _ID		+ " INTEGER PRIMARY KEY" 	+ ", "
 					+ TITLE		+ " TEXT" 					+ ", "
 					+ RESULT	+ " TEXT" 					+ ", "
 					+ STATUS    + " TEXT" 					+ ", "
@@ -32,10 +33,9 @@ public final class DBContract {
 					+")";
 		}
 		
-		public static final class Grade{
+		public static final class Grade implements BaseColumns{
 			private Grade(){};
 			
-			public static final String ID 		= "_id";
 			public static final String TITLE 	= "title";
 			public static final String SEMESTER = "semester";
 			public static final String DATE 	= "date";
@@ -46,7 +46,7 @@ public final class DBContract {
 			public static final String ATTEMPT 	= "attempt";
 			
 			public static final String CREATE = CREATE_TABLE + GRADE + "("
-					+ ID		+ " INTEGER PRIMARY KEY"	+ ", "
+					+ _ID		+ " INTEGER PRIMARY KEY"	+ ", "
 					+ TITLE		+ " TEXT"					+ ", "
 					+ SEMESTER	+ " TEXT"					+ ", "
 					+ DATE		+ " TEXT"					+ ", "

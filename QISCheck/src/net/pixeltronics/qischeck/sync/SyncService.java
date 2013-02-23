@@ -1,6 +1,7 @@
 package net.pixeltronics.qischeck.sync;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.pixeltronics.qischeck.LauncherActivity;
@@ -18,12 +19,15 @@ import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.OperationApplicationException;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -111,26 +115,20 @@ public class SyncService extends IntentService {
 	}
 
 	
-// TODO: BATCH MODE
-//	private void insertValues(Uri uri, List<ContentValues> values){
-//		ContentResolver cr = getContentResolver();
-//		ArrayList<ContentProviderOperation> ops =  new ArrayList<ContentProviderOperation>();
-//		for(ContentValues row : values){
-//			ops.add(ContentProviderOperation.newInsert(uri).withValues(row).build());
-//		}
-//		try {
-//			cr.applyBatch(GradesContract.AUTH, ops);
-//		} catch (RemoteException e) {
-//			Log.e(TAG,"Error while inserting values", e);
-//		} catch (OperationApplicationException e) {
-//			Log.e(TAG,"Error while inserting values", e);
-//		}
-//	}
-	
 	private void insertValues(Uri uri, List<ContentValues> values){
 		ContentResolver cr = getContentResolver();
+		ArrayList<ContentProviderOperation> ops =  new ArrayList<ContentProviderOperation>();
 		for(ContentValues row : values){
-			cr.insert(uri, row);
+			ops.add(ContentProviderOperation.newInsert(uri).withValues(row).build());
+		}
+		try {
+			cr.applyBatch(GradesContract.AUTH, ops);
+		} catch (RemoteException e) {
+			Log.e(TAG,"Error while inserting values", e);
+			toast("Fehler beim Eintragen in Datenbank");
+		} catch (OperationApplicationException e) {
+			Log.e(TAG,"Error while inserting values", e);
+			toast("Fehler beim Eintragen in Datenbank");
 		}
 	}
 }

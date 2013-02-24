@@ -43,7 +43,8 @@
         <service
             android:name="net.pixeltronics.qischeck.sync.SyncService"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"
+            android:process=":remote" />
     </application>
 
 </manifest>

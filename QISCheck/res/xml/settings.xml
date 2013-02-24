@@ -2,18 +2,34 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
     
  <PreferenceCategory
-   android:summary="Username and password information"
-   android:title="Login information" >
+   android:summary="Zugangsdaten zum QIS-System der Hochschule"
+   android:title="Zugangsdaten" >
   <EditTextPreference
      android:key="username"
-     android:summary="Please enter your login username"
-     android:title="Username" />
+     android:summary="Bitte gib deinen Benutzernamen ein"
+     android:title="Benutzername" />
   <EditTextPreference
      android:key="password"
-     android:summary="Enter your password"
+     android:summary="Bitte gib dein Passwort ein"
      android:title="Passwort"
      android:password="true" />
-  
  </PreferenceCategory>
+  <PreferenceCategory
+      android:summary="Sync (de-)aktiviere und Intervall einstellen"
+      android:title="Sync" >
+  <CheckBoxPreference
+      android:key="syncToggle"
+      android:title="Sync aktivieren"
+      android:summaryOn="Sync ist aktiviert."
+      android:summaryOff="Sync ist deaktiviert."/>
+  <ListPreference
+      android:key="synctime"
+      android:title="Sync-Intervall"
+      android:defaultValue="60"
+      android:summary="Configure the time between syncs"
+      android:entries="@array/syncNames"
+      android:entryValues="@array/syncValues"/>
+      
+  </PreferenceCategory>
  
 </PreferenceScreen>

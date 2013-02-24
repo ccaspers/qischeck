@@ -16,4 +16,11 @@
     <string name="msg_nogrades">Noten konnten nicht abgerufen werden</string>
     <string name="title_activity_settings">QIS-Check - Einstellungen</string>
 
+    <string name="minutes30">30 Minuten</string>
+    <string name="hours1">1 Stunde</string>
+    <string name="hours2">2 Stunden</string>
+    <string name="hours6">6 Stunden</string>
+    <string name="hours12">12 Stunden</string>
+    <string name="days1">24 Stunden</string>
+    
 </resources>

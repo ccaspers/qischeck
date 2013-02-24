@@ -26,7 +26,6 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.RemoteException;
-import android.os.Vibrator;
 import android.provider.BaseColumns;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -55,8 +54,6 @@ public class SyncService extends IntentService {
 	}
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		Vibrator v =(Vibrator)getSystemService(VIBRATOR_SERVICE);
-		v.vibrate(new long[]{100,100,100}, -1);
 		NotificationUtil.showSyncInProgressNotification(this);
 		downloadGrades();
 		NotificationUtil.cancelNotification(this,NotificationUtil.ID_SYNC);

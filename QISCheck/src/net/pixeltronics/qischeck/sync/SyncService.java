@@ -75,8 +75,8 @@ public class SyncService extends IntentService {
 	        List<ContentValues> grades = qis.getGrades();
 	        notificationForNewRows(GradesContract.Grade.BASE_URI, grades);
 	        insertValues(GradesContract.Grade.BASE_URI, grades);
-	        
 	        qis.logout();
+	        Settings.setLastSyncDate(getApplicationContext(), System.currentTimeMillis());
 		}catch(ClientProtocolException e1){
 			toast("ClientProtocolException");
 			Log.e(TAG,"Error while syncing grades", e1);

@@ -28,7 +28,7 @@
             android:entries="@array/syncNames"
             android:entryValues="@array/syncValues"
             android:key="synctime"
-            android:summary="Configure the time between syncs"
+            android:summary="Zeitlicher Abstand zwischen Sync-Vorgängen"
             android:title="Sync-Intervall" />
 
         <Preference

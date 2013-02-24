@@ -23,7 +23,10 @@ import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 import android.os.RemoteException;
+import android.os.Vibrator;
 import android.provider.BaseColumns;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -36,14 +39,24 @@ public class SyncService extends IntentService {
 	public static final String TAG = SyncService.class.getName();
 	public static final String ACTION_LOGOUT = TAG+"LOGOUT";
 	private Handler mHandler;
+	private WakeLock mWakeLock;
 	
 	public SyncService() {
 		super(TAG);
-		 mHandler = new Handler();
+		mHandler = new Handler();
 	}
 
 	@Override
+	public void onCreate() {
+		super.onCreate();
+		PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+		mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
+		mWakeLock.acquire();
+	}
+	@Override
 	protected void onHandleIntent(Intent intent) {
+		Vibrator v =(Vibrator)getSystemService(VIBRATOR_SERVICE);
+		v.vibrate(new long[]{100,100,100}, -1);
 		NotificationUtil.showSyncInProgressNotification(this);
 		downloadGrades();
 		NotificationUtil.cancelNotification(this,NotificationUtil.ID_SYNC);
@@ -136,5 +149,12 @@ public class SyncService extends IntentService {
 			Log.e(TAG,"Error while inserting values", e);
 			toast("Fehler beim Eintragen in Datenbank");
 		}
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		mWakeLock.release();
+		Log.v(TAG, "Sync OnDestroy");
 	}
 }

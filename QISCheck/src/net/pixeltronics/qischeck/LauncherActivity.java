@@ -3,7 +3,6 @@
  */
 package net.pixeltronics.qischeck;
 
-import net.pixeltronics.qischeck.sync.SyncService;
 import net.pixeltronics.qischeck.ui.GradesView;
 import net.pixeltronics.qischeck.ui.LoginActivity;
 import net.pixeltronics.qischeck.ui.Settings;
@@ -30,10 +29,6 @@ public class LauncherActivity extends Activity {
 	}
 	
 	private void showGradesActivity() {
-		// Sync On Startup
-		Intent sync = new Intent(this, SyncService.class);
-		startService(sync);
-		
 		Intent intent = new Intent(this, GradesView.class);
 		startActivity(intent);
 		finish();

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory
+        android:summary="Zugangsdaten zum QIS-System der Hochschule"
+        android:title="Zugangsdaten" >
+        <EditTextPreference
+            android:key="username"
+            android:summary="Bitte gib deinen Benutzernamen ein"
+            android:title="Benutzername" />
+        <EditTextPreference
+            android:key="password"
+            android:password="true"
+            android:summary="Bitte gib dein Passwort ein"
+            android:title="Passwort" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:summary="Sync (de-)aktiviere und Intervall einstellen"
+        android:title="Sync" >
+        <CheckBoxPreference
+            android:key="syncToggle"
+            android:summaryOff="Sync ist deaktiviert."
+            android:summaryOn="Sync ist aktiviert."
+            android:title="Sync aktivieren" />
+
+        <ListPreference
+            android:defaultValue="60"
+            android:entries="@array/syncNames"
+            android:entryValues="@array/syncValues"
+            android:key="synctime"
+            android:summary="Zeitlicher Abstand zwischen Sync-Vorgängen"
+            android:title="Sync-Intervall" />
+
+        <Preference
+			android:selectable="true"
+			android:enabled="false"			
+            android:key="lastsync"
+            android:summary="Nie"
+            android:title="Letzter Sync" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -1,4 +1,8 @@
-﻿QISCheck
+**Deprecated - use https://github.com/MyGrades instead**
+
+--------------------------------------------------------
+
+##QISCheck
 ========
 
 Einfache Android-App zum Anzeigen des Notenspiegels aus dem QIS-System
